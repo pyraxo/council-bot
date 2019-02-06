@@ -1,0 +1,18 @@
+{
+  "name": "thumper",
+  "version": "1.0.0",
+  "description": "bot for personal server",
+  "main": "index.js",
+  "dependencies": {
+    "dotenv": "^6.2.0",
+    "eris": "github:abalabahaha/eris#dev",
+    "ioredis": "^4.6.2",
+    "require-all": "^3.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "MIT"
+}
