@@ -1,4 +1,5 @@
-# Setting up
+# Council Bot
+Discord bot for RI 38SC initiative 
 
 ## Requirements
 * Node.js
