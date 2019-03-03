@@ -7,9 +7,17 @@
     "dotenv": "^6.2.0",
     "eris": "github:abalabahaha/eris#dev",
     "ioredis": "^4.6.2",
-    "require-all": "^3.0.0"
+    "require-all": "^3.0.0",
+    "xlsx": "^0.14.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^5.15.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0"
+  },
   "scripts": {
     "start": "node index.js"
   },

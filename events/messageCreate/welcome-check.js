@@ -1,15 +1,14 @@
 const db = require('../../util/db')
-const { createReplyWrapper, deleteDelay } = require('../../util/msg-utils')
+const { createReplyWrapper } = require('../../util/msg-utils')
 
-const isValidPIN = str => {
-  // TODO: Check if PIN is valid
-  if (str === 'TESTING!!') return true
-  return false
+const checkValidPIN = async str => {
+  const res = await db.get(`pin:${str}`)
+  return res && res === '0'
 }
 
 const isPassword = str => {
-  // TODO: Check if password is correct
-  if (str === 'PASSWORD!!') return true
+  // TODO: Editable password?
+  if (str.toLowerCase() === 'i agree') return true
   return false
 }
 
@@ -18,37 +17,40 @@ module.exports = async (msg, bot) => {
   if (msg.author.bot) return
   if (msg.channel.type === 1) return
 
-  // Check if message is sent to welcome channel
-  if (msg.channel.id === process.env.WELCOME_CHANNEL_ID) {
-    const reply = createReplyWrapper(msg)
+  const isWelcomeChannel = msg.channel.id === process.env.WELCOME_CHANNEL_ID
+  const isRulesChannel = msg.channel.id === process.env.RULES_CHANNEL_ID
 
-    const str = msg.content.replace(' ', '')
+  if (!isWelcomeChannel && !isRulesChannel) return
 
-    try {
-      const auth = await db.hget(msg.author.id, 'auth')
-      if (!auth) {
-        if (!isValidPIN(str)) {
-          return reply('the PIN is invalid. Please use a valid PIN.')
-        }
-        await db.hmset(msg.author.id, 'pin', str, 'auth', 1)
-        return reply('your PIN has been successfully registered. Please enter the password to unlock the channels.')
-      } else if (auth === '1') {
-        if (!isPassword(str)) {
-          return reply('the password is incorrect.')
-        }
-        await msg.member.addRole(process.env.MEMBER_ROLE_ID, 'Correct PIN and password')
-        await db.hset(msg.author.id, 'auth', 2)
-        return reply('you have successfully registered.')
-      } else if (auth === '2') {
-        return reply('you have already registered.')
+  const reply = createReplyWrapper(msg)
+
+  const str = msg.content.trim()
+  const userKey = `user:${msg.author.id}`
+
+  try {
+    const auth = await db.hget(userKey, 'auth')
+    if (!auth && isWelcomeChannel) {
+      const isPINValid = await checkValidPIN(str)
+      if (!isPINValid) {
+        return reply('the PIN is invalid. Please use a valid PIN.')
       }
-    } catch (err) {
-      console.error(`Error assigning user ${msg.author.name} (${msg.author.id}) to PIN ${str}`)
-      console.error(err)
-      await reply('An error has occurred while verifying your PIN. Please contact an administrator.')
-      return
-    } finally {
-      deleteDelay(msg, 5000)
+      await db.hmset(userKey, 'pin', str, 'auth', 1)
+      await db.set(`pin:${str}`, 1)
+      return reply(`your PIN has been successfully registered. Please visit <#${process.env.RULES_CHANNEL_ID}> to proceed.`)
+    } else if (auth === '1' && isRulesChannel) {
+      if (!isPassword(str)) {
+        return reply('the password is incorrect.')
+      }
+      await msg.member.addRole(process.env.MEMBER_ROLE_ID, 'Correct PIN and password')
+      await db.hset(userKey, 'auth', 2)
+      return reply('you have successfully registered.')
     }
+  } catch (err) {
+    console.error(`Error saving details of user ${msg.author.username} (${msg.author.id})`)
+    console.error(err)
+    await reply('An error has occurred while verifying your response. Please contact an administrator.')
+    return
+  } finally {
+    msg.delete().catch(() => {})
   }
 }

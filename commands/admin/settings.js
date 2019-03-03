@@ -1,6 +1,6 @@
 module.exports = {
   perms: ['GUILD_UPDATE'],
-  exec: (msg, bot) => {
+  exec: async (msg, bot) => {
     // TODO: ALlow changing of prefix, channel and member IDs
   }
 }
