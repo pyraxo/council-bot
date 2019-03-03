@@ -37,7 +37,7 @@ bot.on('messageCreate', msg => {
   if (!msg.content.startsWith(process.env.BOT_PREFIX)) return
 
   botCommands.forEach((command, commandKey) => {
-    // TODO: Check perms
+    if (command.admin === true && !msg.member.roles.find(id => id === process.env.ADMIN_ROLE_ID)) return
     command.exec(msg, bot).catch(err => {
       const [group, name] = commandKey.split(':')
       console.error(`Error running command ${name} of group ${group}`)
