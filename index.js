@@ -33,13 +33,19 @@ bot.on('messageCreate', msg => {
   // Skips message if it's sent by the bot itself
   if (msg.author.id === bot.user.id) return
 
+  const args = msg.content.trim().split(' ')
+
   // Skip message if it's not a command (prefixed)
-  if (!msg.content.startsWith(process.env.BOT_PREFIX)) return
+  const prefix = process.env.BOT_PREFIX
+  if (!args[0].startsWith(prefix)) return
+
+  const cmd = args[0].substr(0, prefix.length)
 
   botCommands.forEach((command, commandKey) => {
     if (command.admin === true && !msg.member.roles.find(id => id === process.env.ADMIN_ROLE_ID)) return
+    const [group, name] = commandKey.split(':')
+    if (cmd !== name) return
     command.exec(msg, bot).catch(err => {
-      const [group, name] = commandKey.split(':')
       console.error(`Error running command ${name} of group ${group}`)
       console.error(err)
     })
