@@ -28,22 +28,33 @@ module.exports = async (msg, bot) => {
   const userKey = `user:${msg.author.id}`
 
   try {
-    const auth = await db.hget(userKey, 'auth')
-    if (!auth && isWelcomeChannel) {
+    if (isWelcomeChannel) {
+      const auth = await db.hget(userKey, 'auth')
       const isPINValid = await checkValidPIN(str)
-      if (!isPINValid) {
-        return reply('the PIN is invalid. Please use a valid PIN.')
+      if (auth !== '1') {
+        if (!isPINValid) {
+          return reply('the PIN is invalid. Please use a valid PIN.')
+        }
+        await db.multi()
+          .hmset(userKey, 'pin', str)
+          .hincrby(userKey, 'auth', 1)
+          .set(`pin:${str}`, 1)
+          .exec()
+        await reply(`your PIN has been successfully registered.`)
       }
-      await db.hmset(userKey, 'pin', str, 'auth', 1)
-      await db.set(`pin:${str}`, 1)
-      return reply(`your PIN has been successfully registered. Please visit <#${process.env.RULES_CHANNEL_ID}> to proceed.`)
-    } else if (auth && isRulesChannel) {
-      if (!isPassword(str)) {
-        return reply('the password is incorrect.')
+    } else if (isRulesChannel) {
+      const pass = await db.hget(userKey, 'pass')
+      if (pass !== '1') {
+        if (!isPassword(str)) {
+          return reply('the password is incorrect.')
+        }
+        await msg.member.addRole(process.env.MEMBER_ROLE_ID, 'Correct PIN and password')
+        await db.multi()
+          .hset(userKey, 'auth', 2)
+          .hincrby(userKey, 'pass', 1)
+          .exec()
+        return reply('you have agreed to the rules.')
       }
-      await msg.member.addRole(process.env.MEMBER_ROLE_ID, 'Correct PIN and password')
-      await db.hset(userKey, 'auth', 2)
-      return reply('you have successfully registered.')
     }
   } catch (err) {
     console.error(`Error saving details of user ${msg.author.username} (${msg.author.id})`)

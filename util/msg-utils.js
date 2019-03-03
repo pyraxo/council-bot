@@ -2,7 +2,7 @@ const createReplyWrapper = origMsg => (msg, delay = 5000, file) => {
   return origMsg.channel.createMessage({
     content: `${origMsg.author.mention}, ${typeof msg === 'object' ? msg.content : msg}`,
     ...msg
-  }, file).then(msg => delay === false ? setTimeout(() => msg.delete(), delay) : null)
+  }, file).then(msg => delay === false ? null : setTimeout(() => msg.delete(), delay))
 }
 
 const deleteDelay = (msg, delay) => {
