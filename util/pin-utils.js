@@ -17,7 +17,7 @@ const checkAllPINs = async () => {
   }
   const multi = db.multi()
   for (const val of pinList) {
-    const key = `pin:${val}`
+    const key = `pin:${val.toLowerCase()}`
     const keyExists = await db.exists(key)
     if (!keyExists) multi.set(key, 0)
   }

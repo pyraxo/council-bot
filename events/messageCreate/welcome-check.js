@@ -24,7 +24,7 @@ module.exports = async (msg, bot) => {
 
   const reply = createReplyWrapper(msg)
 
-  const str = msg.content.trim()
+  const str = msg.content.trim().toLowerCase()
   const userKey = `user:${msg.author.id}`
 
   try {
@@ -37,7 +37,7 @@ module.exports = async (msg, bot) => {
       await db.hmset(userKey, 'pin', str, 'auth', 1)
       await db.set(`pin:${str}`, 1)
       return reply(`your PIN has been successfully registered. Please visit <#${process.env.RULES_CHANNEL_ID}> to proceed.`)
-    } else if (auth === '1' && isRulesChannel) {
+    } else if (auth && isRulesChannel) {
       if (!isPassword(str)) {
         return reply('the password is incorrect.')
       }
