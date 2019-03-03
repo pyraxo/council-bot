@@ -45,7 +45,7 @@ module.exports = async (msg, bot) => {
 
         const pinChannel = msg.channel.guild.channels.find(c => c.id === process.env.PINS_CHANNEL_ID)
         if (pinChannel) {
-          pinChannel.createMessage(`**\`${str}\`**: ${msg.author.mention}`)
+          pinChannel.createMessage(`**\`${str}\`**: ${msg.author.mention} (ID: \`${msg.author.id}\`)`)
         }
         
         if (pass === '1') {
