@@ -12,6 +12,7 @@ const checkAllPINs = async () => {
   let pinList = []
   for (const ref in sheet) {
     if (!ref.startsWith('B')) continue
+    if (ref === 'B1') continue
     pinList.push(sheet[ref].v)
   }
   const multi = db.multi()
