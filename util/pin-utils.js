@@ -19,7 +19,7 @@ const checkAllPINs = async () => {
   for (const val of pinList) {
     const key = `pin:${val.toLowerCase()}`
     const keyExists = await db.exists(key)
-    if (!keyExists) multi.set(key, 0)
+    if (!keyExists) multi.set(key, 1)
   }
   const reply = await multi.exec()
   return reply.filter(resp => !!resp).length

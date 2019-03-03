@@ -3,7 +3,7 @@ const { createReplyWrapper } = require('../../util/msg-utils')
 
 const checkValidPIN = async str => {
   const res = await db.get(`pin:${str}`)
-  return res && res === '0'
+  return res && res === '1'
 }
 
 const isPassword = str => {
