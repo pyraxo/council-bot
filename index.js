@@ -39,7 +39,7 @@ bot.on('messageCreate', msg => {
   const prefix = process.env.BOT_PREFIX
   if (!args[0].startsWith(prefix)) return
 
-  const cmd = args[0].substr(0, prefix.length)
+  const cmd = args[0].substr(prefix.length)
 
   botCommands.forEach((command, commandKey) => {
     if (command.admin === true && !msg.member.roles.find(id => id === process.env.ADMIN_ROLE_ID)) return
