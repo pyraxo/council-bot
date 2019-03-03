@@ -42,6 +42,11 @@ module.exports = async (msg, bot) => {
           .hincrby(userKey, 'auth', 1)
           .set(`pin:${str}`, 1)
           .exec()
+
+        const pinChannel = msg.channel.guild.channels.find(c => c.id === process.env.PINS_CHANNEL_ID)
+        if (pinChannel) {
+          pinChannel.createMessage(`**\`${str}\`**: ${msg.author.mention}`)
+        }
         
         if (pass === '1') {
           await reply(`your PIN has been successfully registered. Welcome to the server!`)

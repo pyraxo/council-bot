@@ -8,8 +8,10 @@ module.exports = async (bot) => {
     .catch(err => console.error('Could not save PINs', err))
   
   const [
-    welcomeChannelId, rulesChannelId, roleId, botPrefix
-  ] = await db.mget(...['welcomeChannelId', 'rulesChannelId', 'roleId', 'prefix'].map(s => `settings:${s}`))
+    welcomeChannelId, rulesChannelId, pinsChannelId, roleId, botPrefix
+  ] = await db.mget(...[
+    'welcomeChannelId', 'rulesChannelId', 'pinsChannelId', 'roleId', 'prefix'
+  ].map(s => `settings:${s}`))
 
   if (welcomeChannelId) {
     console.log(`Using stored welcome channel ID ${welcomeChannelId} instead of ${process.env.WELCOME_CHANNEL_ID}`)
@@ -23,6 +25,13 @@ module.exports = async (bot) => {
     process.env.RULES_CHANNEL_ID = rulesChannelId
   } else if (process.env.RULES_CHANNEL_ID) {
     console.log(`Using rules channel ID ${process.env.RULES_CHANNEL_ID} from .env`)
+  }
+
+  if (pinsChannelId) {
+    console.log(`Using stored PINs channel ID ${pinsChannelId} instead of ${process.env.PINS_CHANNEL_ID}`)
+    process.env.PINS_CHANNEL_ID = pinsChannelId
+  } else if (process.env.PINS_CHANNEL_ID) {
+    console.log(`Using PINs channel ID ${process.env.PINS_CHANNEL_ID} from .env`)
   }
 
   if (roleId) {

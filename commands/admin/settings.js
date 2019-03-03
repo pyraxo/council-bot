@@ -21,10 +21,6 @@ module.exports = {
           'title': '**Bot Settings**',
           'fields': [
             {
-              'name': 'Bot Prefix (prefix)',
-              'value': `\`${prefix}\``
-            },
-            {
               'name': '#welcome channel (welcome)',
               'value': `<#${process.env.WELCOME_CHANNEL_ID}>`,
               'inline': true
@@ -32,6 +28,16 @@ module.exports = {
             {
               'name': '#rules channel (rules)',
               'value': `<#${process.env.RULES_CHANNEL_ID}>`,
+              'inline': true
+            },
+            {
+              'name': '#pin-log channel (pins)',
+              'value': `<#${process.env.PINS_CHANNEL_ID}>`,
+              'inline': true
+            },
+            {
+              'name': 'Bot Prefix (prefix)',
+              'value': `\`${prefix}\``,
               'inline': true
             },
             {
@@ -65,6 +71,10 @@ module.exports = {
         case 'rules': {
           const id = process.env.RULES_CHANNEL_ID
           return reply(`the rules channel is <#${id}> (ID: \`${id}\`)`)
+        }
+        case 'pins': {
+          const id = process.env.PINS_CHANNEL_ID
+          return reply(`the PINs channel is <#${id}> (ID: \`${id}\`)`)
         }
       }
     }
@@ -107,6 +117,15 @@ module.exports = {
           await db.set('settings:rulesChannelId', id)
           process.env.RULES_CHANNEL_ID = id
           return reply(`the rules channel is now <#${id}>`)
+        }
+        case 'pins': {
+          const id = args[1]
+          if (!msg.channel.guild.channels.find(channel => channel.id === id)) {
+            return reply(`I could not find a channel with ID \`${id}\`.`)
+          }
+          await db.set('settings:pinsChannelId', id)
+          process.env.PINS_CHANNEL_ID = id
+          return reply(`the PINs channel is now <#${id}>`)
         }
       }
     }
