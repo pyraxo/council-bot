@@ -33,7 +33,7 @@ module.exports = async (bot) => {
   }
 
   if (botPrefix) {
-    console.log(`Using stored bot prefix ${roleId} instead of ${process.env.BOT_PREFIX}`)
+    console.log(`Using stored bot prefix ${botPrefix} instead of ${process.env.BOT_PREFIX}`)
     process.env.BOT_PREFIX = botPrefix
   } else if (process.env.BOT_PREFIX) {
     console.log(`Using stored bot prefix ${process.env.BOT_PREFIX} from .env`)
